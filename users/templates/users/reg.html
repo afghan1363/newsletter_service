@@ -1,0 +1,24 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+
+<main>
+    <form method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">Регистрация</div>
+                    <div class="card-body">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <h6>Для подтверждения регистрации проверте почту!</h6>
+                        <button type="submit" class="btn btn-success">
+                            Зарегистрироваться
+                        </button>
+                        <a class="btn btn-outline-warning" href="{% url 'catalog:main_index' %}">Отмена</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</main>
+{% endblock %}

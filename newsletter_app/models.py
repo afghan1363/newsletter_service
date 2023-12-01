@@ -18,7 +18,7 @@ STATUSES_SEND = (
 
 
 class Client(models.Model):
-    email = models.EmailField(verbose_name='Почта')
+    email = models.EmailField(unique=True, verbose_name='Почта')
     full_name = models.CharField(max_length=150, verbose_name='ФИО')
     comment = models.TextField(verbose_name='Комментарий')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
@@ -33,6 +33,7 @@ class Client(models.Model):
 
 
 class Message(models.Model):
+    client = models.ManyToManyField(Client, verbose_name='Клиент')
     subject = models.CharField(max_length=100, verbose_name='Тема сообщения')
     text = models.TextField(verbose_name='Текст сообщения')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
@@ -50,11 +51,11 @@ class Newsletter(models.Model):
     time_send = models.TimeField(verbose_name='Время рассылки')
     date_send = models.DateField(verbose_name='Дата рассылки', **NULLABLE)
     period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default='week', verbose_name='Периодичность')
-    status_send = models.CharField(max_length=20, choices=STATUSES_SEND, verbose_name='Статус рассылки')
-    client = models.ManyToManyField(Client, verbose_name='Клиент')
+    status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default='created',
+                                   verbose_name='Статус рассылки')
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='Сообщение')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-                             verbose_name='Менеджер клиента')
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+    #                          verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.time_send} - {self.status_send}'
