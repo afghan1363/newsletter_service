@@ -17,11 +17,11 @@
                     <div class="card-body">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="m-2 btn btn-success">
                             Войти
                         </button>
-                        <a class="btn btn-outline-warning" href="{% url 'catalog:main_index' %}">Отмена</a>
-                        <a href="{% url 'users:reset_password' %}">Пароль забыт</a>
+                        <a class="m-2 btn btn-outline-warning" href="{% url 'news:index' %}">Отмена</a>
+                        <a href="{% url 'users:forgot_pass' %}">Пароль забыт?</a>
                     </div>
                 </div>
             </div>

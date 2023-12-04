@@ -3,10 +3,11 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView, D
 from newsletter_app.models import Client
 from newsletter_app.forms import ClientForm
 from django.urls import reverse_lazy, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Create your views here.
-class ClientView(ListView):
+class ClientView(LoginRequiredMixin, ListView):
     model = Client
     extra_context = {'title': 'Список клиентов'}
 
