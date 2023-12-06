@@ -166,13 +166,14 @@
       </a>
 
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none">{{ user.email }}</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:index' %}">Главная</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:newsletters' %}">Рассылки</a>
         {% if user.is_authenticated %}
           <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'users:logout' %}">Выход</a>
         {% else %}
           <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'users:reg' %}">Регистрация</a>
         {% endif %}
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Рассылки</a>
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Enterprise</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="#">Support</a>
         <a class="py-2 link-body-emphasis text-decoration-none" href="#">Pricing</a>
       </nav>

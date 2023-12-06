@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
-from newsletter_app.models import Client
-from newsletter_app.forms import ClientForm
+from newsletter_app.models import Client, Newsletter
+from newsletter_app.forms import ClientForm, NewsletterForm
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -11,15 +11,23 @@ class ClientView(LoginRequiredMixin, ListView):
     model = Client
     extra_context = {'title': 'Список клиентов'}
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data['client_list'] = Client.objects.all()
-        return context_data
-
-    def get_queryset(self):
+    def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
-
+        # queryset = queryset.filter(owner_id=self.kwargs.get('pk'), )
+        if (not self.request.user.is_staff and not self.request.user.is_superuser
+                and not self.request.user.groups.filter(name='moderators')):
+            queryset = queryset.filter(owner=self.request.user)
+        print(self.request.user.is_staff)
+        print(self.request.user.is_superuser)
+        print(self.request.user.pk)
+        print(queryset)
         return queryset
+
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     context_data = super().get_context_data(**kwargs)
+    #     context_data['object_list'] = Client.objects.all()
+    #     print(context_data['object_list'])
+    #     return context_data
 
 
 class ClientCreateView(CreateView):
@@ -44,6 +52,7 @@ class ClientUpdateView(UpdateView):
 class ClientDetailView(DetailView):
     model = Client
 
+
 class ClientDeleteView(DeleteView):
     model = Client
     success_url = reverse_lazy('news:index')
@@ -55,3 +64,36 @@ class ClientDeleteView(DeleteView):
         context_data['client_pk'] = client_item.pk
         context_data['title'] = f'Удаление клиента {client_item}'
         return context_data
+
+
+class NewsletterView(ListView):
+    model = Newsletter
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['newsletter_list'] = Newsletter.objects.all()
+        print(Newsletter.objects.all())
+        return context_data
+
+
+class NewsletterCreateView(CreateView):
+    model = Newsletter
+    form_class = NewsletterForm
+
+    def get_success_url(self):
+        return reverse_lazy('news:newsletter_detail', args=[self.object.pk])
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        return super().form_valid(form)
+
+    # def get_form_kwargs(self):
+    #     kwargs = super(NewsletterCreateView, self).get_form_kwargs()
+    #     kwargs['user'] = self.request.user  # Передаем текущего пользователя в форму
+    #     return kwargs
+
+
+class NewsletterDetailView(DetailView):
+    model = Newsletter
+    extra_context = {'title': 'Детали рассылки'}

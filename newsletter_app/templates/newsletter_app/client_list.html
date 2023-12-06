@@ -2,12 +2,13 @@
 {% block content %}
   <main>
     <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_client' %}">Добавить клиента</a>
+    <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_newsletter' %}">Добавить рассылку</a>
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
-      {% for client in client_list %}
+      {% for object in object_list %}
       <div class="col">
         <div class="card mb-4 rounded-3 shadow-sm border-primary">
           <div class="card-header py-3 text-bg-primary border-primary">
-            <h4 class="my-0 fw-normal">{{ client }}</h4>
+            <h4 class="my-0 fw-normal">{{ object }}</h4>
           </div>
           <div class="card-body">
             <h5 class="card-title">Подключенные рассылки:</h5>
@@ -17,7 +18,7 @@
               <li>Phone and email support</li>
               <li>Help center access</li>
             </ul>
-            <a class="btn btn-primary" href="{% url 'news:client' client.pk %}" role="button">Просмотр</a>
+            <a class="btn btn-primary" href="{% url 'news:client' object.pk %}" role="button">Просмотр</a>
           </div>
         </div>
       </div>

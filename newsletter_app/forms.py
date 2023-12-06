@@ -1,5 +1,5 @@
 from django import forms
-from newsletter_app.models import Client
+from newsletter_app.models import Client, Newsletter, Options
 
 
 class StyleFormMixin:
@@ -14,4 +14,27 @@ class ClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
         # fields = '__all__'
-        exclude = ('user',)
+        exclude = ('owner',)
+
+
+class NewsletterForm(StyleFormMixin, forms.ModelForm):
+
+    # def __init__(self, *args, **kwargs):
+    #     user = kwargs.pop('user', None)
+    #     super(NewsletterForm, self).__init__(*args, **kwargs)
+    #
+    #     # Ограничиваем queryset для выбора клиентов только теми, которых создал текущий пользователь
+    #     self.fields['client'].queryset = Client.objects.filter(owner=user)
+    #
+    # def form_valid(self, form):
+    #     form.instance.user = self.request.user
+    #     return super().form_valid(form)
+
+    class Meta:
+        model = Newsletter
+        fields = '__all__'
+
+
+class OptionsForm(StyleFormMixin, forms.ModelForm):
+    model = Options
+    exclude = ('message',)

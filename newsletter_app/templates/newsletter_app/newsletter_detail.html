@@ -1,0 +1,23 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Клиент</th>
+      <th scope="col">Тема</th>
+      <th scope="col">Время отправки</th>
+      <th scope="col">Периодичность</th>
+      <th scope="col">Статус рассылки</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    <tr>
+      <th scope="row">{{ newsletter.client }}</th>
+      <td>{{ newsletter.subject }}</td>
+      <td>{{ newsletter.time_send }}</td>
+      <td>{{ newsletter.period }}</td>
+      <td>{{ newsletter.status }}</td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}
