@@ -13,10 +13,9 @@
           <div class="card-body">
             <h5 class="card-title">Подключенные рассылки:</h5>
             <ul class="list-unstyled mt-3 mb-4">
-              <li>30 users included</li>
-              <li>15 GB of storage</li>
-              <li>Phone and email support</li>
-              <li>Help center access</li>
+              {% for n in object.newsletter_set.all %}
+                <li>{{ n }} {{ n.options_set.date_send }}</li>
+              {% endfor %}
             </ul>
             <a class="btn btn-primary" href="{% url 'news:client' object.pk %}" role="button">Просмотр</a>
           </div>

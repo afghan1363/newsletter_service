@@ -12,11 +12,20 @@
   </thead>
   <tbody class="table-group-divider">
     <tr>
-      <th scope="row">{{ newsletter.client }}</th>
+      {% for client in newsletter.client.all %}
+        <th scope="row">
+          {% if client %}
+            {{ client }}
+          {% else %}
+            Не назначен
+          {% endif %}</th>
+      {% endfor %}
       <td>{{ newsletter.subject }}</td>
       <td>{{ newsletter.time_send }}</td>
       <td>{{ newsletter.period }}</td>
       <td>{{ newsletter.status }}</td>
+      <td><a class="btn btn-link" href="{% url 'news:update_newsletter' object.pk %}">Редактировать</a></td>
+      <td><a class="btn btn-link" href="{% url 'news:delete_newsletter' object.pk %}">Удалить</a></td>
     </tr>
   </tbody>
 </table>

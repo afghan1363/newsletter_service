@@ -40,7 +40,7 @@ class Newsletter(models.Model):
     #                           verbose_name='Менеджер клиента')
 
     def __str__(self):
-        return f'{self.subject} - {self.client}'
+        return f'{self.subject}'
 
     class Meta:
         verbose_name = 'Рассылка'

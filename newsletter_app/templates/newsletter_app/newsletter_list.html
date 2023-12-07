@@ -1,7 +1,6 @@
 {% extends 'newsletter_app/base.html' %}
 {% block content %}
 <table class="table">
-  {% for newsletter in newsletter_list %}
   <thead>
     <tr>
       <th scope="col">Клиент</th>
@@ -12,8 +11,11 @@
     </tr>
   </thead>
   <tbody class="table-group-divider">
+   {% for newsletter in newsletter_list %}
     <tr>
-      <th scope="row">{{ newsletter.client }}</th>
+      {% for client in newsletter.client.all %}
+        <th scope="row">{{ client }}</th>
+      {% endfor %}
       <td><a href="{% url 'news:newsletter_detail' newsletter.pk %}">{{ newsletter.subject }}</a></td>
       <td>{{ newsletter.time_send }}</td>
       <td>{{ newsletter.period }}</td>

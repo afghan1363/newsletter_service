@@ -19,16 +19,16 @@ class ClientForm(StyleFormMixin, forms.ModelForm):
 
 class NewsletterForm(StyleFormMixin, forms.ModelForm):
 
-    # def __init__(self, *args, **kwargs):
-    #     user = kwargs.pop('user', None)
-    #     super(NewsletterForm, self).__init__(*args, **kwargs)
-    #
-    #     # Ограничиваем queryset для выбора клиентов только теми, которых создал текущий пользователь
-    #     self.fields['client'].queryset = Client.objects.filter(owner=user)
-    #
-    # def form_valid(self, form):
-    #     form.instance.user = self.request.user
-    #     return super().form_valid(form)
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(NewsletterForm, self).__init__(*args, **kwargs)
+
+        # Ограничиваем queryset для выбора клиентов только теми, которых создал текущий пользователь
+        self.fields['client'].queryset = Client.objects.filter(owner=user)
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
     class Meta:
         model = Newsletter
@@ -36,5 +36,7 @@ class NewsletterForm(StyleFormMixin, forms.ModelForm):
 
 
 class OptionsForm(StyleFormMixin, forms.ModelForm):
-    model = Options
-    exclude = ('message',)
+
+    class Meta:
+        model = Options
+        fields = '__all__'

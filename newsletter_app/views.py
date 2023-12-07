@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
-from newsletter_app.models import Client, Newsletter
-from newsletter_app.forms import ClientForm, NewsletterForm
+from newsletter_app.models import Client, Newsletter, Options
+from newsletter_app.forms import ClientForm, NewsletterForm, OptionsForm
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import inlineformset_factory
 
 
 # Create your views here.
@@ -88,12 +89,50 @@ class NewsletterCreateView(CreateView):
         self.object.owner = self.request.user
         return super().form_valid(form)
 
-    # def get_form_kwargs(self):
-    #     kwargs = super(NewsletterCreateView, self).get_form_kwargs()
-    #     kwargs['user'] = self.request.user  # Передаем текущего пользователя в форму
-    #     return kwargs
+    def get_form_kwargs(self):
+        kwargs = super(NewsletterCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user  # Передаем текущего пользователя в форму
+        return kwargs
+
+
+class NewsletterUpdateView(UpdateView):
+    model = Newsletter
+    form_class = NewsletterForm
+
+    def get_success_url(self):
+        return reverse_lazy('news:newsletter_detail', args=[self.object.pk])
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        OptionsFormset = inlineformset_factory(Newsletter, Options, form=OptionsForm, extra=1)
+        if self.request.method == 'POST':
+            context_data['formset'] = OptionsFormset(self.request.POST, instance=self.object)
+        else:
+            context_data['formset'] = OptionsFormset(instance=self.object)
+        return context_data
+
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        self.object = form.save()
+        if formset.is_valid():
+            formset.instance = self.object
+            formset.save()
+        return super().form_valid(form)
 
 
 class NewsletterDetailView(DetailView):
     model = Newsletter
     extra_context = {'title': 'Детали рассылки'}
+
+
+class NewsletterDeleteView(DeleteView):
+    model = Newsletter
+    success_url = reverse_lazy('news:newsletters')
+
+    def get_context_data(self, **kwargs):
+        """Подтверждение удаления"""
+        context_data = super().get_context_data(**kwargs)
+        newsletter_item = Newsletter.objects.get(pk=self.kwargs.get('pk'))
+        context_data['newsletter_pk'] = newsletter_item.pk
+        context_data['title'] = f'Удаление рассылки {newsletter_item}'
+        return context_data
