@@ -1,7 +1,15 @@
+import datetime
+
 from django.db import models
 from django.conf import settings
+from datetime import date
+
 
 # Create your models here.
+def get_date_now():
+    return date.today()
+
+
 NULLABLE = {'blank': True, 'null': True}
 
 PERIODS_SEND = (
@@ -36,6 +44,7 @@ class Newsletter(models.Model):
     client = models.ManyToManyField(Client, verbose_name='Клиент')
     subject = models.CharField(max_length=100, verbose_name='Тема сообщения', blank=True)
     text = models.TextField(verbose_name='Текст сообщения', blank=True)
+
     # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
     #                           verbose_name='Менеджер клиента')
 
@@ -48,17 +57,17 @@ class Newsletter(models.Model):
 
 
 class Options(models.Model):
-    time_send = models.TimeField(verbose_name='Время рассылки')
-    date_send = models.DateField(verbose_name='Дата рассылки', **NULLABLE)
+    date_start = models.DateField(default=get_date_now, verbose_name='Время рассылки')
     period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default='week', verbose_name='Периодичность')
     status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default='created',
                                    verbose_name='Статус рассылки')
     message = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Сообщение', blank=True)
+
     # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
     #                          verbose_name='Менеджер клиента')
 
     def __str__(self):
-        return f'{self.time_send} - {self.status_send}'
+        return f'{self.date_start} - {self.status_send}'
 
     class Meta:
         verbose_name = 'Настройка'

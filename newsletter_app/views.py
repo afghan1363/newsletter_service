@@ -38,7 +38,7 @@ class ClientCreateView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        self.object.user = self.request.user
+        self.object.owner = self.request.user
         return super().form_valid(form)
 
 
@@ -84,10 +84,10 @@ class NewsletterCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy('news:newsletter_detail', args=[self.object.pk])
 
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     self.object = form.save()
+    #     self.object.owner = self.request.user
+    #     return super().form_valid(form)
 
     def get_form_kwargs(self):
         kwargs = super(NewsletterCreateView, self).get_form_kwargs()

@@ -13,12 +13,7 @@
   <tbody class="table-group-divider">
     <tr>
       {% for client in newsletter.client.all %}
-        <th scope="row">
-          {% if client %}
-            {{ client }}
-          {% else %}
-            Не назначен
-          {% endif %}</th>
+        <th scope="row">{{ client|default_if_none:"нет клиента" }}</th>
       {% endfor %}
       <td>{{ newsletter.subject }}</td>
       <td>{{ newsletter.time_send }}</td>
