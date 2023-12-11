@@ -1,4 +1,6 @@
 from django import forms
+from django.forms import DateInput
+
 from newsletter_app.models import Client, Newsletter, Options
 
 
@@ -40,3 +42,8 @@ class OptionsForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Options
         fields = '__all__'
+        widgets = {
+            'date_start': DateInput(
+                attrs={'type': 'date'}
+            )
+        }

@@ -70,11 +70,16 @@ class ClientDeleteView(DeleteView):
 class NewsletterView(ListView):
     model = Newsletter
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data['newsletter_list'] = Newsletter.objects.all()
-        print(Newsletter.objects.all())
-        return context_data
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     context_data = super().get_context_data(**kwargs)
+    #     context_data['newsletter_list'] = Newsletter.objects.all()
+    #     return context_data
+    
+    def get_queryset(self):
+        # queryset =
+        # queryset = queryset
+        print(super().get_queryset().filter(owner=self.request.user))
+        return super().get_queryset().filter(owner=self.request.user)
 
 
 class NewsletterCreateView(CreateView):
@@ -102,9 +107,14 @@ class NewsletterUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('news:newsletter_detail', args=[self.object.pk])
 
+    def get_form_kwargs(self):
+        kwargs = super(NewsletterUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user  # Передаем текущего пользователя в форму
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        OptionsFormset = inlineformset_factory(Newsletter, Options, form=OptionsForm, extra=1)
+        OptionsFormset = inlineformset_factory(Newsletter, Options, form=OptionsForm, extra=0)
         if self.request.method == 'POST':
             context_data['formset'] = OptionsFormset(self.request.POST, instance=self.object)
         else:

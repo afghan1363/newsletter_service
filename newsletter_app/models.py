@@ -45,8 +45,8 @@ class Newsletter(models.Model):
     subject = models.CharField(max_length=100, verbose_name='Тема сообщения', blank=True)
     text = models.TextField(verbose_name='Текст сообщения', blank=True)
 
-    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-    #                           verbose_name='Менеджер клиента')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+                              verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.subject}'
@@ -63,8 +63,8 @@ class Options(models.Model):
                                    verbose_name='Статус рассылки')
     message = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Сообщение', blank=True)
 
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-    #                          verbose_name='Менеджер клиента')
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+                             verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.date_start} - {self.status_send}'
@@ -79,6 +79,8 @@ class Logs(models.Model):
     status = models.CharField(max_length=10, verbose_name='Статус')
     mail_serv_response = models.TextField(verbose_name='Ответ почтового сервера')
     newsletter = models.ForeignKey(Newsletter, on_delete=models.SET_NULL, verbose_name='Рассылка', **NULLABLE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+                              verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'Лог: {self.time}'
