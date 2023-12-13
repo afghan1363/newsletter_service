@@ -1,5 +1,4 @@
 import datetime
-
 from django.db import models
 from django.conf import settings
 from datetime import date
@@ -64,7 +63,7 @@ class Options(models.Model):
     message = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Сообщение', blank=True)
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-                             verbose_name='Менеджер клиента')
+                              verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.date_start} - {self.status_send}'

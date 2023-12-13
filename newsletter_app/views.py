@@ -81,6 +81,23 @@ class NewsletterView(ListView):
         print(super().get_queryset().filter(owner=self.request.user))
         return super().get_queryset().filter(owner=self.request.user)
 
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        # context['category_pk'] = category_item.pk
+        # context['title'] = f'''Все проги категории: {category_item.title}'''
+        for newsletter in context['newsletter_list']:
+            news_detail = newsletter.options_set
+            print(news_detail)
+            if news_detail:
+                newsletter.date_start = news_detail.date_start
+                newsletter.period_send = news_detail.period_send
+            else:
+                newsletter.date_start = news_detail.date_start
+                newsletter.period_send = news_detail.period_send
+
+        return context
+
 
 class NewsletterCreateView(CreateView):
     model = Newsletter
@@ -89,10 +106,10 @@ class NewsletterCreateView(CreateView):
     def get_success_url(self):
         return reverse_lazy('news:newsletter_detail', args=[self.object.pk])
 
-    # def form_valid(self, form):
-    #     self.object = form.save()
-    #     self.object.owner = self.request.user
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        return super().form_valid(form)
 
     def get_form_kwargs(self):
         kwargs = super(NewsletterCreateView, self).get_form_kwargs()
@@ -114,7 +131,8 @@ class NewsletterUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        OptionsFormset = inlineformset_factory(Newsletter, Options, form=OptionsForm, extra=0)
+        OptionsFormset = inlineformset_factory(Newsletter, Options, form=OptionsForm, extra=1, max_num=1,
+                                               validate_max=True)
         if self.request.method == 'POST':
             context_data['formset'] = OptionsFormset(self.request.POST, instance=self.object)
         else:
@@ -124,10 +142,14 @@ class NewsletterUpdateView(UpdateView):
     def form_valid(self, form):
         formset = self.get_context_data()['formset']
         self.object = form.save()
+        print(self.request.user)
+        print(form)
         if formset.is_valid():
             formset.instance = self.object
+            print(formset.instance)
             formset.save()
         return super().form_valid(form)
+
 
 
 class NewsletterDetailView(DetailView):

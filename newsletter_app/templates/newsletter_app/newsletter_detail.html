@@ -16,8 +16,8 @@
         <th scope="row">{{ client|default_if_none:"нет клиента" }}</th>
       {% endfor %}
       <td>{{ newsletter.subject }}</td>
-      <td>{{ newsletter.time_send }}</td>
-      <td>{{ newsletter.period }}</td>
+      <td>{{ newsletter.options_set.date_start }}</td>
+      <td>{{ newsletter.options_set.period }}</td>
       <td>{{ newsletter.status }}</td>
       <td><a class="btn btn-link" href="{% url 'news:update_newsletter' object.pk %}">Редактировать</a></td>
       <td><a class="btn btn-link" href="{% url 'news:delete_newsletter' object.pk %}">Удалить</a></td>
