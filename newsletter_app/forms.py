@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import DateInput
 
-from newsletter_app.models import Client, Newsletter, Options
+from newsletter_app.models import Client, Newsletter, Message
 
 
 class StyleFormMixin:
@@ -24,7 +24,6 @@ class NewsletterForm(StyleFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(NewsletterForm, self).__init__(*args, **kwargs)
-
         # Ограничиваем queryset для выбора клиентов только теми, которых создал текущий пользователь
         self.fields['client'].queryset = Client.objects.filter(owner=user)
 
@@ -34,16 +33,15 @@ class NewsletterForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = Newsletter
-        fields = '__all__'
-
-
-class OptionsForm(StyleFormMixin, forms.ModelForm):
-
-    class Meta:
-        model = Options
-        fields = '__all__'
+        exclude = ('owner',)
         widgets = {
             'date_start': DateInput(
                 attrs={'type': 'date'}
             )
         }
+
+
+class MessageForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = '__all__'

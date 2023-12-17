@@ -1,7 +1,6 @@
 {% extends 'newsletter_app/base.html' %}
 {% block content %}
 <main>
-    <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_client' %}">Добавить клиента</a>
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
         <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm border-primary">
@@ -9,23 +8,16 @@
                     <h4 class="my-0 fw-normal">{{ object }}</h4>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Подключенные рассылки:</h5>
-                    <ul class="list-unstyled mt-3 mb-4">
-                        <li>30 users included</li>
-                        <li>15 GB of storage</li>
-                        <li>Phone and email support</li>
-                        <li>Help center access</li>
-                    </ul>
+                    <h5 class="card-title">{{ object.comment }}</h5>
                     <div class="card-footer">
-                    <a class="btn btn-link" href="{% url 'news:client' object.pk %}">Рассылки</a>
-                    <a class="btn btn-link" href="{% url 'news:update_client' object.pk %}">Редактировать</a>
+                    <a class="btn btn-outline-warning mb-2" href="{% url 'news:update_client' object.pk %}">Редактировать</a>
                     <a class="btn btn-outline-danger float-right" href="{% url 'news:delete_client' object.pk %}">Удалить</a>
                 </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_newsletter' %}">Подключить рассылку</a>
     <h2 class="display-6 text-center mb-4">Compare plans</h2>
 
     <div class="table-responsive">

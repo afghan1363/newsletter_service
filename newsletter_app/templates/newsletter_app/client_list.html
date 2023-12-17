@@ -2,7 +2,6 @@
 {% block content %}
   <main>
     <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_client' %}">Добавить клиента</a>
-    <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_newsletter' %}">Добавить рассылку</a>
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
       {% for object in object_list %}
       <div class="col">
@@ -11,7 +10,7 @@
             <h4 class="my-0 fw-normal">{{ object }}</h4>
           </div>
           <div class="card-body">
-            <h5 class="card-title">Подключенные рассылки:</h5>
+            <h5 class="card-title">{{ object.comment }}</h5>
             <ul class="list-unstyled mt-3 mb-4">
               {% for n in object.newsletter_set.all %}
                 <li>{{ n }} {{ n.options_set.date_send }}</li>

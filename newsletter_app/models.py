@@ -11,18 +11,6 @@ def get_date_now():
 
 NULLABLE = {'blank': True, 'null': True}
 
-PERIODS_SEND = (
-    ('day', 'Раз в день'),
-    ('week', 'Раз в неделю'),
-    ('month', 'Раз в месяц'),
-)
-
-STATUSES_SEND = (
-    ('created', 'Создана'),
-    ('started', 'Запущена'),
-    ('completed', 'Завершена'),
-)
-
 
 class Client(models.Model):
     email = models.EmailField(verbose_name='Почта')
@@ -39,47 +27,65 @@ class Client(models.Model):
         verbose_name_plural = 'Клиенты'
 
 
-class Newsletter(models.Model):
-    client = models.ManyToManyField(Client, verbose_name='Клиент')
+class Message(models.Model):
     subject = models.CharField(max_length=100, verbose_name='Тема сообщения', blank=True)
     text = models.TextField(verbose_name='Текст сообщения', blank=True)
-
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-                              verbose_name='Менеджер клиента')
+    newsletter = models.OneToOneField('Newsletter', on_delete=models.CASCADE, verbose_name='Рассылка')
+    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+    #                           verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.subject}'
 
     class Meta:
-        verbose_name = 'Рассылка'
-        verbose_name_plural = 'Рассылки'
+        verbose_name = 'Сообщение'
+        verbose_name_plural = 'Сообщения'
 
 
-class Options(models.Model):
+class Newsletter(models.Model):
+    DAILY = 'day'
+    WEEKLY = 'week'
+    MONTHLY = 'month'
+    PERIODS_SEND = (
+        (DAILY, 'Раз в день'),
+        (WEEKLY, 'Раз в неделю'),
+        (MONTHLY, 'Раз в месяц'),
+    )
+
+    CREATED = 'crtd'
+    STARTED = 'strtd'
+    COMPLETED = 'cmpld'
+    STATUSES_SEND = (
+        (CREATED, 'Создана'),
+        (STARTED, 'Запущена'),
+        (COMPLETED, 'Завершена'),
+    )
+
+    client = models.ManyToManyField(Client, verbose_name='Клиент')
     date_start = models.DateField(default=get_date_now, verbose_name='Время рассылки')
-    period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default='week', verbose_name='Периодичность')
-    status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default='created',
+    period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default=WEEKLY, verbose_name='Периодичность')
+    status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default=CREATED,
                                    verbose_name='Статус рассылки')
-    message = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Сообщение', blank=True)
-
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                               verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.date_start} - {self.status_send}'
 
     class Meta:
-        verbose_name = 'Настройка'
-        verbose_name_plural = 'Настройки'
+        verbose_name = 'Рассылка'
+        verbose_name_plural = 'Рассылки'
 
 
 class Logs(models.Model):
     time = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время попытки')
     status = models.CharField(max_length=10, verbose_name='Статус')
     mail_serv_response = models.TextField(verbose_name='Ответ почтового сервера')
-    newsletter = models.ForeignKey(Newsletter, on_delete=models.SET_NULL, verbose_name='Рассылка', **NULLABLE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-                              verbose_name='Менеджер клиента')
+    # newsletter = models.ForeignKey(Newsletter, on_delete=models.SET_NULL, verbose_name='Рассылка', **NULLABLE)
+    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
+    #                           verbose_name='Менеджер клиента')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='')
+    newsletter = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Рассылка')
 
     def __str__(self):
         return f'Лог: {self.time}'
