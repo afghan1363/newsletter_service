@@ -34,14 +34,16 @@ class NewsletterForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Newsletter
         exclude = ('owner',)
-        widgets = {
-            'date_start': DateInput(
-                attrs={'type': 'date'}
-            )
-        }
+        # widgets = {
+        #     'date_start': DateInput(
+        #         attrs={'type': 'date'}
+        #     )
+        # }
 
 
 class MessageForm(StyleFormMixin, forms.ModelForm):
+
     class Meta:
         model = Message
         fields = '__all__'
+

@@ -1,4 +1,3 @@
-import datetime
 from django.db import models
 from django.conf import settings
 from datetime import date
@@ -43,34 +42,28 @@ class Message(models.Model):
 
 
 class Newsletter(models.Model):
-    DAILY = 'day'
-    WEEKLY = 'week'
-    MONTHLY = 'month'
     PERIODS_SEND = (
-        (DAILY, 'Раз в день'),
-        (WEEKLY, 'Раз в неделю'),
-        (MONTHLY, 'Раз в месяц'),
+        ('DAILY', 'Раз в день'),
+        ('WEEKLY', 'Раз в неделю'),
+        ('MONTHLY', 'Раз в месяц'),
     )
 
-    CREATED = 'crtd'
-    STARTED = 'strtd'
-    COMPLETED = 'cmpld'
     STATUSES_SEND = (
-        (CREATED, 'Создана'),
-        (STARTED, 'Запущена'),
-        (COMPLETED, 'Завершена'),
+        ('CREATED', 'Создана'),
+        ('STARTED', 'Запущена'),
+        ('COMPLETED', 'Завершена'),
     )
 
     client = models.ManyToManyField(Client, verbose_name='Клиент')
-    date_start = models.DateField(default=get_date_now, verbose_name='Время рассылки')
-    period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default=WEEKLY, verbose_name='Периодичность')
-    status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default=CREATED,
+    date_start = models.DateField(default=get_date_now, verbose_name='Дата старта рассылки')
+    period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default='WEEKLY', verbose_name='Периодичность')
+    status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default='CREATED',
                                    verbose_name='Статус рассылки')
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, **NULLABLE,
                               verbose_name='Менеджер клиента')
 
     def __str__(self):
-        return f'{self.date_start} - {self.status_send}'
+        return f'{self.date_start} - {self.period_send} - {self.status_send}'
 
     class Meta:
         verbose_name = 'Рассылка'

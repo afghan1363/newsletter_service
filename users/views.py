@@ -22,7 +22,6 @@ class UserRegView(CreateView):
     success_url = reverse_lazy('users:login')
     template_name = 'users/reg.html'
 
-
     def form_valid(self, form):
         """
         Верификация почты по ссылке

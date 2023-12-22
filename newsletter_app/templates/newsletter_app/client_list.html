@@ -13,7 +13,7 @@
             <h5 class="card-title">{{ object.comment }}</h5>
             <ul class="list-unstyled mt-3 mb-4">
               {% for n in object.newsletter_set.all %}
-                <li>{{ n }} {{ n.options_set.date_send }}</li>
+                <li>{{ n }}</li>
               {% endfor %}
             </ul>
             <a class="btn btn-primary" href="{% url 'news:client' object.pk %}" role="button">Просмотр</a>

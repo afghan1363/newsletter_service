@@ -13,12 +13,12 @@
   <tbody class="table-group-divider">
     <tr>
       {% for client in newsletter.client.all %}
-        <th scope="row">{{ client|default_if_none:"нет клиента" }}</th>
+        <th scope="row">{{ client }}</th>
       {% endfor %}
-      <td>{{ newsletter.subject }}</td>
-      <td>{{ newsletter.options_set.date_start }}</td>
-      <td>{{ newsletter.options_set.period }}</td>
-      <td>{{ newsletter.status }}</td>
+      <td>{{ newsletter.message.subject }}</td>
+      <td>{{ newsletter.date_start }}</td>
+      <td>{{ newsletter.period_send }}</td>
+      <td>{{ newsletter.status_send }}</td>
       <td><a class="btn btn-link" href="{% url 'news:update_newsletter' object.pk %}">Редактировать</a></td>
       <td><a class="btn btn-link" href="{% url 'news:delete_newsletter' object.pk %}">Удалить</a></td>
     </tr>

@@ -81,22 +81,20 @@ class NewsletterView(ListView):
         print(super().get_queryset().filter(owner=self.request.user))
         return super().get_queryset().filter(owner=self.request.user)
 
-    def get_context_data(self, **kwargs):
-
-        context = super().get_context_data(**kwargs)
-        # context['category_pk'] = category_item.pk
-        # context['title'] = f'''Все проги категории: {category_item.title}'''
-        for newsletter in context['newsletter_list']:
-            news_detail = newsletter.options_set
-            print(news_detail)
-            if news_detail:
-                newsletter.date_start = news_detail.date_start
-                newsletter.period_send = news_detail.period_send
-            else:
-                newsletter.date_start = news_detail.date_start
-                newsletter.period_send = news_detail.period_send
-
-        return context
+    # def get_context_data(self, **kwargs):
+    #
+    #     context = super().get_context_data(**kwargs)
+    #     # context['category_pk'] = category_item.pk
+    #     # context['title'] = f'''Все проги категории: {category_item.title}'''
+    #     for newsletter in context['newsletter_list']:
+    #         if newsletter:
+    #             date_start = newsletter.date_start
+    #             newsletter.period_send = news_detail.period_send
+    #         else:
+    #             newsletter.date_start = news_detail.date_start
+    #             newsletter.period_send = news_detail.period_send
+    #
+    #     return context
 
 
 class NewsletterCreateView(CreateView):
@@ -107,11 +105,9 @@ class NewsletterCreateView(CreateView):
         return reverse_lazy('news:newsletter_detail', args=[self.object.pk])
 
     def form_valid(self, form):
-        print(f'self.request.user - {self.request.user}')
-        print(f'form - {form}')
-        self.object = form.save()
+        self.object = form.save(commit=False)
         self.object.owner = self.request.user
-        print(f'self.object.owner - {self.object}')
+        self.object.save()
         return super().form_valid(form)
 
     def get_form_kwargs(self):
