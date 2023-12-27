@@ -8,6 +8,10 @@ def get_date_now():
     return date.today()
 
 
+def get_date_plus_week():
+    return date.today() + timedelta(weeks=1)
+
+
 NULLABLE = {'blank': True, 'null': True}
 
 
@@ -30,8 +34,6 @@ class Message(models.Model):
     subject = models.CharField(max_length=100, verbose_name='Тема сообщения', blank=True)
     text = models.TextField(verbose_name='Текст сообщения', blank=True)
     newsletter = models.OneToOneField('Newsletter', on_delete=models.CASCADE, verbose_name='Рассылка')
-    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-    #                           verbose_name='Менеджер клиента')
 
     def __str__(self):
         return f'{self.subject}'
@@ -56,7 +58,7 @@ class Newsletter(models.Model):
 
     client = models.ManyToManyField(Client, verbose_name='Клиент')
     date_start = models.DateField(default=get_date_now, verbose_name='Дата старта рассылки')
-   # date_stop = models.DateField(default=date.today() + timedelta(days=1), verbose_name='Дата завершение рассылки')
+    date_stop = models.DateField(default=get_date_plus_week, verbose_name='Дата завершение рассылки')
     period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default='WEEKLY', verbose_name='Периодичность')
     status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default='CREATED',
                                    verbose_name='Статус рассылки')
@@ -81,9 +83,6 @@ class Logs(models.Model):
     time = models.DateTimeField(auto_now_add=True, verbose_name='Дата и время попытки')
     status = models.CharField(max_length=10, verbose_name='Статус')
     mail_serv_response = models.TextField(verbose_name='Ответ почтового сервера')
-    # newsletter = models.ForeignKey(Newsletter, on_delete=models.SET_NULL, verbose_name='Рассылка', **NULLABLE)
-    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
-    #                           verbose_name='Менеджер клиента')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
     newsletter = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Рассылка')
 

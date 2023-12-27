@@ -16,6 +16,12 @@
                 <h5 class="card-title">Текст рассылки:</h5>
                 <h5 class="my-0 fw-normal">{{ newsletter.message.text }}</h5>
                 <hr>
+                <h5 class="card-title">Дата окончания:</h5>
+                <h5 class="my-0 fw-normal">{{ newsletter.date_stop }}</h5>
+                <hr>
+                <h5 class="card-title">Периодичность - Статус:</h5>
+                <h5 class="my-0 fw-normal">{{ newsletter.period_send }} - {{ newsletter.status_send }}</h5>
+                <hr>
                 {% if perms.newsletter_app.change_newsletter %}
                 <a class="btn btn-primary" href="{% url 'news:update_newsletter' object.pk %}">Редактировать</a>
                 {% endif %}

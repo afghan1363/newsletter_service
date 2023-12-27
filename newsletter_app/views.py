@@ -82,34 +82,14 @@ class ClientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 class NewsletterView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Newsletter
     permission_required = ('newsletter_app.view_newsletter',)
-
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context_data = super().get_context_data(**kwargs)
-    #     context_data['newsletter_list'] = Newsletter.objects.all()
-    #     return context_data
+    extra_context = {'title': 'Рассылки'}
 
     def get_queryset(self):
         queryset = super().get_queryset()
         if (not self.request.user.is_staff and not self.request.user.is_superuser
                 and not self.request.user.groups.filter(name='Moderators')):
             queryset = queryset.filter(owner=self.request.user)
-        # print(super().get_queryset().filter(owner=self.request.user))
         return queryset
-
-    # def get_context_data(self, **kwargs):
-    #
-    #     context = super().get_context_data(**kwargs)
-    #     # context['category_pk'] = category_item.pk
-    #     # context['title'] = f'''Все проги категории: {category_item.title}'''
-    #     for newsletter in context['newsletter_list']:
-    #         if newsletter:
-    #             date_start = newsletter.date_start
-    #             newsletter.period_send = news_detail.period_send
-    #         else:
-    #             newsletter.date_start = news_detail.date_start
-    #             newsletter.period_send = news_detail.period_send
-    #
-    #     return context
 
 
 class NewsletterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -168,6 +148,12 @@ class NewsletterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
 @login_required
 @permission_required(perm='newsletter_app.set_status_send', login_url='users:login')
 def change_newsletter_status(request, pk):
+    """
+    Переключение статуса рассылки
+    :param request: реквест
+    :param pk: пикей рассылки
+    :return: redirect
+    """
     newsletter_item = get_object_or_404(Newsletter, pk=pk)
     if newsletter_item.status_send != 'COMPLETED':
         newsletter_item.status_send = 'COMPLETED'
@@ -189,7 +175,9 @@ class NewsletterDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
     permission_required = ('newsletter_app.delete_newsletter',)
 
     def get_context_data(self, **kwargs):
-        """Подтверждение удаления"""
+        """
+        Подтверждение удаления
+        """
         context_data = super().get_context_data(**kwargs)
         newsletter_item = Newsletter.objects.get(pk=self.kwargs.get('pk'))
         context_data['newsletter_pk'] = newsletter_item.pk
@@ -202,7 +190,6 @@ class LogsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     template_name = 'newsletter_app/logs_list.html'
     permission_required = 'newsletter_app.view_logs'
 
-    # permission_required = ('newsletter_app.view_logs',)
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(owner=self.request.user)
