@@ -155,5 +155,5 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 CRONJOBS = [
-    ('*/5 * * * *', 'newsletter_app.cron.send_newsletter_job')
+    ('59 09 */1 * *', 'newsletter_app.cron.send_newsletter_job')
 ]

@@ -18,6 +18,11 @@
                                     Добавить рассылку
                                     {% endif %}
                                 </button>
+                                {% if object %}
+                                <a class="btn btn-danger" href="{% url 'news:newsletter_detail' object.pk %}">Отмена</a>
+                                {% else %}
+                                <a class="btn btn-danger" href="{% url 'news:newsletters' %}">Отмена</a>
+                                {% endif %}
                             </div>
                         </div>
                         </div>

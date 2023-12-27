@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from datetime import date
+from datetime import date, timedelta
 
 
 # Create your models here.
@@ -56,6 +56,7 @@ class Newsletter(models.Model):
 
     client = models.ManyToManyField(Client, verbose_name='Клиент')
     date_start = models.DateField(default=get_date_now, verbose_name='Дата старта рассылки')
+   # date_stop = models.DateField(default=date.today() + timedelta(days=1), verbose_name='Дата завершение рассылки')
     period_send = models.CharField(max_length=20, choices=PERIODS_SEND, default='WEEKLY', verbose_name='Периодичность')
     status_send = models.CharField(max_length=20, choices=STATUSES_SEND, default='CREATED',
                                    verbose_name='Статус рассылки')
@@ -68,6 +69,12 @@ class Newsletter(models.Model):
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+        permissions = [
+            (
+                'set_status_send',
+                'Can change status_send'
+            ),
+        ]
 
 
 class Logs(models.Model):
@@ -77,7 +84,7 @@ class Logs(models.Model):
     # newsletter = models.ForeignKey(Newsletter, on_delete=models.SET_NULL, verbose_name='Рассылка', **NULLABLE)
     # owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE,
     #                           verbose_name='Менеджер клиента')
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент')
     newsletter = models.ForeignKey(Newsletter, on_delete=models.CASCADE, verbose_name='Рассылка')
 
     def __str__(self):
