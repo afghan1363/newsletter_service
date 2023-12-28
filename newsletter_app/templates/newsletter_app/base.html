@@ -169,15 +169,16 @@
         <a class="me-3 py-2 link-body-emphasis text-decoration-none">{{ user.email }}</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:index' %}">Главная</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:newsletters' %}">Рассылки</a>
+        {% if perms.newsletter_app.view_logs %}
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:logs' %}">LOGS</a>
+        {% endif %}
         {% if user.is_authenticated %}
-          <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'users:logout' %}">Выход</a>
+          <a class="py-2 link-body-emphasis text-decoration-none" href="{% url 'users:logout' %}">Выход</a>
         {% else %}
-          <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'users:reg' %}">Регистрация</a>
+          <a class="py-2 link-body-emphasis text-decoration-none" href="{% url 'users:reg' %}">Регистрация</a>
         {% endif %}
 <!--        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'users:users_list' %}">Пользователи сервиса</a>-->
-        {% if perms.newsletter_app.view_logs %}
-        <a class="py-2 link-body-emphasis text-decoration-none" href="{% url 'news:logs' %}">LOGS</a>
-        {% endif %}
+
       </nav>
     </div>
 

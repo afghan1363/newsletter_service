@@ -17,11 +17,10 @@ class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
-        # queryset = queryset.filter(owner_id=self.kwargs.get('pk'), )
 
         if self.request.user.groups.filter(name='Moderators'):
             self.model = User
-            # self.permission_required = ('users.change_user',)
+            self.permission_required = ('users.set_is_active',)
             self.template_name = 'users/user_list.html'
         # elif not self.request.user.is_staff and not self.request.user.is_superuser:
         else:
@@ -36,6 +35,15 @@ class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             context_data['object_list'] = User.objects.exclude(email=current_user)
             context_data['object_list'] = context_data['object_list'].exclude(is_superuser=True).order_by('email')
             context_data['title'] = 'Список пользователей'
+        count_clients = len(Client.objects.filter(owner=self.request.user.pk))
+        count_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk))
+        active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
+        # blog_list = [blog for blog in Blog.objects.all()]
+        # random_blog_list = random.sample(blog_list, 3)
+        context_data['count_clients'] = count_clients
+        context_data['count_newsletters'] = count_newsletters
+        context_data['active_newsletters'] = active_newsletters
+        # context_data['random_blog_list'] = random_blog_list
         return context_data
 
 
@@ -63,6 +71,7 @@ class ClientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 class ClientDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Client
     permission_required = ('newsletter_app.view_client',)
+    extra_context = {'title': 'Просмотр клиента'}
 
 
 class ClientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -88,8 +97,8 @@ class NewsletterView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         queryset = super().get_queryset()
         if (not self.request.user.is_staff and not self.request.user.is_superuser
                 and not self.request.user.groups.filter(name='Moderators')):
-            queryset = queryset.filter(owner=self.request.user)
-        return queryset
+            queryset = queryset.filter(owner=self.request.user).order_by('owner')
+        return queryset.order_by('owner')
 
 
 class NewsletterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):

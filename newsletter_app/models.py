@@ -66,7 +66,7 @@ class Newsletter(models.Model):
                               verbose_name='Менеджер клиента')
 
     def __str__(self):
-        return f'{self.date_start} - {self.period_send} - {self.status_send}'
+        return f'Активна до {self.date_stop} - {self.period_send} - {self.status_send}'
 
     class Meta:
         verbose_name = 'Рассылка'

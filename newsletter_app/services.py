@@ -27,17 +27,18 @@ def mailing_util(subject,
 def do_newsletter():
     print('StartSend')
     now = date.today()
-    receivers = Newsletter.objects.filter(date_start__lte=now)
+    receivers = Newsletter.objects.filter(date_start__lte=now, date_stop__gte=now)
+    print(receivers)
     new_receivers_list = [newsletter for newsletter in receivers if newsletter.status_send == 'CREATED']
     if len(new_receivers_list) > 0:
         for newsletter in new_receivers_list:
             newsletter.status_send = 'STARTED'
             newsletter.save()
+            # new_receivers_list = []
     receivers_list = [newsletter for newsletter in receivers if newsletter.status_send == 'STARTED']
     if len(receivers_list) > 0:
         for newsletter in receivers_list:
             mail_list = [client.email for client in newsletter.client.all()]
-            owner = newsletter.owner
             subject = newsletter.message.subject
             message = newsletter.message.text
             recipient_list = mail_list
@@ -45,9 +46,11 @@ def do_newsletter():
                 status_send = mailing_util(subject=subject, message=message, recipient_list=recipient_list)
                 for client in newsletter.client.all():
                     log = Logs.objects.create(
-                        time=datetime.now(), status=bool(status_send), mail_serv_response='Успешно',
+                        time=datetime.now(), status=bool(status_send), mail_serv_response='</>',
                         client=client, newsletter=newsletter)
-                if newsletter.period_send == 'DAILY':
+                if newsletter.date_stop == now:
+                    newsletter.status_send = 'COMPLETED'
+                elif newsletter.period_send == 'DAILY':
                     newsletter.date_start += timedelta(days=1)
                 elif newsletter.period_send == 'WEEKLY':
                     newsletter.date_start += timedelta(weeks=1)
@@ -64,4 +67,4 @@ def do_newsletter():
             finally:
                 log.save()
                 newsletter.save()
-                print('EndSend')
+    print('EndSend')
