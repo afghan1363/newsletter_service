@@ -24,14 +24,15 @@
 <div class="container">
     <div class="col-12 mb-5">
         <div class="row text-center">
+            <h3 class="text-center mb-4">Блог</h3>
             {% for object in random_blog_list %}
             <div class="col-md-6 mb-2">
                 <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                     <div class="col p-4 d-flex flex-column position-static">
                         <h3 class="mb-0">{{object.title}}</h3>
                         <div class="mb-1 text-body-secondary">{{object.published_date}}</div>
-                        <p class="card-text mb-auto">{{object.text|slice:50}}</p>
-                        <a href="{% url 'blog:view' object.slug %}"
+                        <p class="card-text mb-auto">{{object.body|slice:50}}</p>
+                        <a href="#"
                            class="icon-link gap-1 icon-link-hover stretched-link">
                             Продолжить чтение
                             <svg class="bi">

@@ -18,8 +18,12 @@ class StartPageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data['title'] = 'The NewsLetter Service'
-        count_clients = len(Client.objects.filter(owner=self.request.user.pk))
-        count_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk))
+        if not self.request.user.is_superuser:
+            count_clients = len(Client.objects.filter(owner=self.request.user.pk))
+            count_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk))
+        else:
+            count_clients = len(Client.objects.all())
+            count_newsletters = len(Newsletter.objects.all())
         active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
         blog_list = [blog for blog in Blog.objects.all()]
         shuffle(blog_list)

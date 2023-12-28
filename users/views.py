@@ -1,7 +1,9 @@
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import CreateView, View, ListView
+
+from newsletter_app.models import Newsletter, Client, Message
 from users.models import User
 from users.forms import UserRegisterForm
 from django.urls import reverse_lazy, reverse
@@ -13,6 +15,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import PasswordResetView
 from newsletter_app.services import mailing_util
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.contenttypes.models import ContentType
 
 
 # Create your views here.
@@ -67,21 +70,38 @@ def verify_mail(request, code):
 
         user.save()
         messages.success(request, 'Ваш аккаунт активирован!')
-        users_group = Group.objects.get(name='Users')
+        users_group = Group.objects.filter(name='Users')
+        print(users_group)
         if users_group:
+            users_group = Group.objects.get(name='Users')
             user.groups.add(users_group)
         else:
-            users_group = Group.objects.create(name='Users')
-            # permission = !!!!!
-            users_group.permissions.set(['newsletter_app.add_newsletter', 'newsletter_app.view_newsletter',
-                                         'newsletter_app.change_newsletter', 'newsletter_app.delete_newsletter',
-                                         'newsletter_app.add_client', 'newsletter_app.view_client',
-                                         'newsletter_app.change_client', 'newsletter_app.delete_client',
-                                         'newsletter_app.add_log', 'newsletter_app.view_log',
-                                         'newsletter_app.change_log', 'newsletter_app.delete_log',
-                                         'newsletter_app.add_message', 'newsletter_app.view_message',
-                                         'newsletter_app.change_message', 'newsletter_app.delete_message'])
+            users_group = Group(name='Users')
+            users_group.save()
+            newsletter_content_type = ContentType.objects.get_for_model(Newsletter)
+            add_permission = Permission.objects.get(codename="add_newsletter", content_type=newsletter_content_type)
+            view_permission = Permission.objects.get(codename="view_newsletter", content_type=newsletter_content_type)
+            change_permission = Permission.objects.get(codename="change_newsletter", content_type=newsletter_content_type)
+            delete_permission = Permission.objects.get(codename="delete_newsletter", content_type=newsletter_content_type)
+            users_group.permissions.add(add_permission, view_permission, change_permission, delete_permission)
+
+            message_content_type = ContentType.objects.get_for_model(Message)
+            add_permission = Permission.objects.get(codename="add_message", content_type=message_content_type)
+            view_permission = Permission.objects.get(codename="view_message", content_type=message_content_type)
+            change_permission = Permission.objects.get(codename="change_message", content_type=message_content_type)
+            delete_permission = Permission.objects.get(codename="delete_message", content_type=message_content_type)
+            users_group.permissions.add(add_permission, view_permission, change_permission, delete_permission)
+
+            client_content_type = ContentType.objects.get_for_model(Client)
+            add_permission = Permission.objects.get(codename="add_client", content_type=client_content_type)
+            view_permission = Permission.objects.get(codename="view_client", content_type=client_content_type)
+            change_permission = Permission.objects.get(codename="change_client", content_type=client_content_type)
+            delete_permission = Permission.objects.get(codename="delete_client", content_type=client_content_type)
+            users_group.permissions.add(add_permission, view_permission, change_permission, delete_permission)
+
+            users_group.save()
             user.groups.add(users_group)
+            user.save()
     except (ValueError, User.DoesNotExist):
         user = None
         messages.warning(request, 'Неверный код верификации')
