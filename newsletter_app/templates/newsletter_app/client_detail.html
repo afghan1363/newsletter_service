@@ -1,0 +1,45 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<main>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 text-bg-primary border-primary">
+                    <h4 class="my-0 fw-normal">{{ object }}</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ object.comment }}</h5>
+                    <div class="card-footer">
+                        <a class="btn btn-outline-warning mb-2" href="{% url 'news:update_client' object.pk %}">Редактировать</a>
+                        <a class="btn btn-outline-danger float-right" href="{% url 'news:delete_client' object.pk %}">Удалить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="display-6 text-center mb-4">Рассылки</h2>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Тема</th>
+                <th scope="col">Время отправки</th>
+                <th scope="col">Периодичность</th>
+                <th scope="col">Статус рассылки</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            {% for n in object.newsletter_set.all %}
+            <tr>
+                <td><a href="{% url 'news:newsletter_detail' n.pk %}">{{ n.message.subject }}</a></td>
+                <td>{{ n.date_start }}</td>
+                <td>{{ n.period_send }}</td>
+                <td>{{ n.status_send }}</td>
+            </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+</main>
+{% endblock %}

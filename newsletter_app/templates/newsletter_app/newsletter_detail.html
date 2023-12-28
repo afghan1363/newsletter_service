@@ -1,0 +1,64 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<div class="row col-12">
+    <div class="col-8">
+        <div class="card mb-4 rounded-3 shadow-sm border-primary">
+            <div class="card-header py-3 text-bg">
+                <h5 class="card-title">Клиенты: </h5>
+                {% for client in newsletter.client.all %}
+                <h5 class="my-0 fw-normal">{{ client }}</h5>
+                <hr>
+                {% endfor %}
+                <h4 class="card-title">Тема:</h4>
+                <h4 class="my-0 fw-normal">{{ newsletter.message.subject }}</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Текст рассылки:</h5>
+                <h5 class="my-0 fw-normal">{{ newsletter.message.text }}</h5>
+                <hr>
+                <h5 class="card-title">Дата окончания:</h5>
+                <h5 class="my-0 fw-normal">{{ newsletter.date_stop }}</h5>
+                <hr>
+                <h5 class="card-title">Периодичность - Статус:</h5>
+                <h5 class="my-0 fw-normal">{{ newsletter.period_send }} - {{ newsletter.status_send }}</h5>
+                <hr>
+                {% if perms.newsletter_app.change_newsletter %}
+                <a class="btn btn-primary" href="{% url 'news:update_newsletter' object.pk %}">Редактировать</a>
+                {% endif %}
+                {% if perms.newsletter_app.delete_newsletter %}
+                <a class="btn btn-danger" href="{% url 'news:delete_newsletter' object.pk %}">Удалить</a>
+                {% endif %}
+                {% if perms.newsletter_app.set_status_send %}
+                {% if newsletter.status_send != 'COMPLETED' %}
+                    <a class="btn btn-warning" href="{% url 'news:newsletter_status' object.pk %}">Остановить</a>
+                {% else %}
+                    <a class="btn btn-warning" href="{% url 'news:newsletter_status' object.pk %}">Возобновить</a>
+                {% endif %}
+                {% endif %}
+                <a class="btn btn-success" href="{% url 'news:newsletters' %}">Отмена</a>
+            </div>
+        </div>
+    </div>
+</div>
+<h2 class="display-6 text-center mb-4">Логи</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Время отправки</th>
+      <th scope="col">Тема рассылки</th>
+      <th scope="col">Статус</th>
+      <th scope="col">Ответ сервера</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+  {% for log in newsletter.logs_set.all %}
+        <tr>
+          <td>{{ log.time }}</td>
+          <td><a href="#">{{ log.newsletter.message.subject }}</a></td>
+          <td>{{ log.status }}</td>
+          <td>{{ log.mail_serv_response }}</td>
+        </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
