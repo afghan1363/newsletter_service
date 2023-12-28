@@ -1,0 +1,22 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<main>
+    <form method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">Удаление рассылки</div>
+                    <div class="card-body">
+                        {% csrf_token %}
+                        <p>Удалить {{ object }}?</p>
+                        <button type="submit" class="btn btn-outline-danger">
+                            Удалить
+                        </button>
+                        <a class="btn btn-outline-warning" href="{% url 'news:newsletter_detail' object.pk %}">Отмена</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</main>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<main>
+    <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_client' %}">Добавить клиента</a>
+    {% if perms.newsletter_app.add_newsletter %}
+    <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_newsletter' %}">Создать рассылку</a>
+    {% endif %}
+    <a class="btn btn-outline-primary mb-5" href="https://chrome-dino.com/ru/">Dino</a>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        {% for object in object_list %}
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 text-bg-primary border-primary">
+                    <h4 class="my-0 fw-normal">{{ object }}</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ object.comment }}</h5>
+                    <ul class="list-unstyled mt-3 mb-4">
+                        {% for n in object.newsletter_set.all %}
+                        <li>{{ n }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a class="btn btn-primary" href="{% url 'news:client' object.pk %}" role="button">Просмотр</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <h2 class="display-6 text-center mb-4">Что у нас есть:</h2>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Количество рассылок всего</th>
+                <th scope="col">Количество активных рассылок</th>
+                <th scope="col">Количество клиентов</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr>
+                <td>{{ count_newsletters }}</td>
+                <td>{{ active_newsletters }}</td>
+                <td>{{ count_clients }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

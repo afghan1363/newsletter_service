@@ -1,0 +1,23 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<main>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+        {% for object in object_list %}
+        <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+                <div class="card-header py-3 text-bg-primary border-primary">
+                    <h4 class="my-0 fw-normal">{{ object }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if object.is_active %}
+                        <a href="{% url 'users:toggle_activity' object.pk %}">Деактивировать</a>
+                    {% else %}
+                        <a href="{% url 'users:toggle_activity' object.pk %}">Активировать</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

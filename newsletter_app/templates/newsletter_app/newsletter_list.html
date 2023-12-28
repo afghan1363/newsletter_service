@@ -1,0 +1,42 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+{% if perms.newsletter_app.add_newsletter %}
+<a class="btn btn-outline-primary mb-5" href="{% url 'news:create_newsletter' %}">Создать рассылку</a>
+{% endif %}
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Клиент</th>
+        <th scope="col">Пользователь</th>
+        <th scope="col">Тема</th>
+        <th scope="col">Время отправки</th>
+        <th scope="col">Периодичность</th>
+        <th scope="col">Статус рассылки</th>
+        {% if perms.newsletter_app.set_status_send %}
+        <th scope="col">Остановить/Возобновить</th>
+        {% endif %}
+    </tr>
+    </thead>
+    <tbody class="table-group-divider">
+    {% for newsletter in newsletter_list %}
+    {% for client in newsletter.client.all %}
+    <tr>
+        <th scope="col">{{ client }}</th>
+        {% endfor %}
+        <th>{{ newsletter.owner }}</th>
+        <td><a href="{% url 'news:newsletter_detail' newsletter.pk %}">{{ newsletter.message.subject }}</a></td>
+        <td>{{ newsletter.date_start }}</td>
+        <td>{{ newsletter.period_send }}</td>
+        <td>{{ newsletter.status_send }}</td>
+        {% if perms.newsletter_app.set_status_send %}
+        {% if newsletter.status_send != 'COMPLETED' %}
+        <th scope="row"><a href="{% url 'news:newsletter_status' newsletter.pk %}">Остановить</a></th>
+        {% else %}
+        <th scope="row"><a href="{% url 'news:newsletter_status' newsletter.pk %}">Возобновить</a></th>
+        {% endif %}
+        {% endif %}
+    </tr>
+    </tbody>
+    {% endfor %}
+</table>
+{% endblock %}

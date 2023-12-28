@@ -1,0 +1,28 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Время отправки</th>
+      <th scope="col">Клиент</th>
+      <th scope="col">Тема рассылки</th>
+      <th scope="col">Статус</th>
+      <th scope="col">Ответ сервера</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+   {% for newsletter in object_list %}
+   {% for log in newsletter.logs_set.all %}
+        <tr>
+
+          <td>{{ log.time }}</td>
+          <td>{{ log.client }}</td>
+          <td><a href="{% url 'news:newsletter_detail' log.newsletter.pk %}">{{ log.newsletter.message.subject }}</a></td>
+          <td>{{ log.status }}</td>
+          <td>{{ log.mail_serv_response }}</td>
+        </tr>
+  </tbody>
+  {% endfor %}
+  {% endfor %}
+</table>
+{% endblock %}

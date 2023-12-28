@@ -1,0 +1,49 @@
+{% extends 'newsletter_app/base.html' %}
+{% block content %}
+<main>
+    <div class="container">
+        <form method="post" enctype="multipart/form-data">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">Добавление сообщений рассылки</div>
+                            <div class="card-body">
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <button type="submit" class="btn btn-success">
+                                    {% if object %}
+                                    Сохранить рассылку
+                                    {% else %}
+                                    Добавить рассылку
+                                    {% endif %}
+                                </button>
+                                {% if object %}
+                                <a class="btn btn-danger" href="{% url 'news:newsletter_detail' object.pk %}">Отмена</a>
+                                {% else %}
+                                <a class="btn btn-danger" href="{% url 'news:newsletters' %}">Отмена</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        </div>
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header">Добавление настроек рассылки</div>
+                            <div class="card-body">
+                                {{ formset.management_form }}
+                                {% for form in formset.forms %}
+                                {{ form.as_p }}
+                                {% if not forloop.last %}
+                                <hr>
+                                <hr>
+                                {%endif%}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
