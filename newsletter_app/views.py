@@ -6,6 +6,8 @@ from newsletter_app.forms import ClientForm, NewsletterForm, MessageForm
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import inlineformset_factory
+
+from newsletter_app.services import cache_it
 from users.models import User
 from blog_app.models import Blog
 from random import shuffle
@@ -25,7 +27,8 @@ class StartPageView(LoginRequiredMixin, TemplateView):
             count_clients = len(Client.objects.all())
             count_newsletters = len(Newsletter.objects.all())
         active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
-        blog_list = [blog for blog in Blog.objects.all()]
+        blog_items = cache_it()
+        blog_list = [blog for blog in blog_items]
         shuffle(blog_list)
         random_blog_list = blog_list[:3]
         context_data['count_clients'] = count_clients
@@ -220,10 +223,12 @@ class NewsletterDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
 
 class LogsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Newsletter
+    extra_context = {'title': 'LoGs'}
     template_name = 'newsletter_app/logs_list.html'
     permission_required = 'newsletter_app.view_logs'
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(owner=self.request.user)
+        if not self.request.user.is_superuser:
+            queryset = queryset.filter(owner=self.request.user)
         return queryset

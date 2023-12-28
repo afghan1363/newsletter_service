@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import CreateView, View, ListView
 
-from newsletter_app.models import Newsletter, Client, Message
+from newsletter_app.models import Newsletter, Client, Message, Logs
 from users.models import User
 from users.forms import UserRegisterForm
 from django.urls import reverse_lazy, reverse
@@ -81,8 +81,10 @@ def verify_mail(request, code):
             newsletter_content_type = ContentType.objects.get_for_model(Newsletter)
             add_permission = Permission.objects.get(codename="add_newsletter", content_type=newsletter_content_type)
             view_permission = Permission.objects.get(codename="view_newsletter", content_type=newsletter_content_type)
-            change_permission = Permission.objects.get(codename="change_newsletter", content_type=newsletter_content_type)
-            delete_permission = Permission.objects.get(codename="delete_newsletter", content_type=newsletter_content_type)
+            change_permission = Permission.objects.get(codename="change_newsletter",
+                                                       content_type=newsletter_content_type)
+            delete_permission = Permission.objects.get(codename="delete_newsletter",
+                                                       content_type=newsletter_content_type)
             users_group.permissions.add(add_permission, view_permission, change_permission, delete_permission)
 
             message_content_type = ContentType.objects.get_for_model(Message)
@@ -97,6 +99,13 @@ def verify_mail(request, code):
             view_permission = Permission.objects.get(codename="view_client", content_type=client_content_type)
             change_permission = Permission.objects.get(codename="change_client", content_type=client_content_type)
             delete_permission = Permission.objects.get(codename="delete_client", content_type=client_content_type)
+            users_group.permissions.add(add_permission, view_permission, change_permission, delete_permission)
+
+            logs_content_type = ContentType.objects.get_for_model(Logs)
+            add_permission = Permission.objects.get(codename="add_logs", content_type=logs_content_type)
+            view_permission = Permission.objects.get(codename="view_logs", content_type=logs_content_type)
+            change_permission = Permission.objects.get(codename="change_logs", content_type=logs_content_type)
+            delete_permission = Permission.objects.get(codename="delete_logs", content_type=logs_content_type)
             users_group.permissions.add(add_permission, view_permission, change_permission, delete_permission)
 
             users_group.save()

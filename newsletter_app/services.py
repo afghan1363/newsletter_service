@@ -1,8 +1,11 @@
+from django.core.cache import cache
 from django.core.mail import send_mail
 from django.conf import settings
 import smtplib
 import time
 from datetime import date, datetime, timedelta
+
+from blog_app.models import Blog
 from newsletter_app.models import Newsletter, Logs
 from calendar import monthrange
 
@@ -68,3 +71,15 @@ def do_newsletter():
                 log.save()
                 newsletter.save()
     print('EndSend')
+
+
+def cache_it():
+    if settings.CACHE_ENABLED:
+        key = 'blog_list'
+        blog_list = cache.get(key)
+        if blog_list is None:
+            blog_list = Blog.objects.all()
+            cache.set(key, blog_list)
+        else:
+            blog_list = Blog.objects.all()
+        return blog_list

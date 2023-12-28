@@ -1,4 +1,6 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
+
 from newsletter_app.apps import NewsletterAppConfig
 from newsletter_app.views import (StartPageView, ClientView, ClientCreateView, ClientUpdateView, ClientDetailView, ClientDeleteView,
                                   NewsletterView, NewsletterCreateView, NewsletterDetailView, NewsletterUpdateView,
@@ -7,7 +9,7 @@ from newsletter_app.views import (StartPageView, ClientView, ClientCreateView, C
 app_name = NewsletterAppConfig.name
 
 urlpatterns = [
-    path('', StartPageView.as_view(), name='start_page'),
+    path('', cache_page(60)(StartPageView.as_view()), name='start_page'),
     path('index/', ClientView.as_view(), name='index'),
     path('new_client/', ClientCreateView.as_view(), name='create_client'),
     path('update_client/<int:pk>', ClientUpdateView.as_view(), name='update_client'),
