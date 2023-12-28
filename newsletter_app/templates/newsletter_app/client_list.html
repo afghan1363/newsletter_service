@@ -5,6 +5,7 @@
     {% if perms.newsletter_app.add_newsletter %}
     <a class="btn btn-outline-primary mb-5" href="{% url 'news:create_newsletter' %}">Создать рассылку</a>
     {% endif %}
+    <a class="btn btn-outline-primary mb-5" href="https://chrome-dino.com/ru/">Dino</a>
     <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
         {% for object in object_list %}
         <div class="col">

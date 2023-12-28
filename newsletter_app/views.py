@@ -1,16 +1,36 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.http import request
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
-from newsletter_app.models import Client, Newsletter, Message, Logs
+from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView
+from newsletter_app.models import Client, Newsletter, Message
 from newsletter_app.forms import ClientForm, NewsletterForm, MessageForm
 from django.urls import reverse_lazy, reverse
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import inlineformset_factory
 from users.models import User
+from blog_app.models import Blog
+from random import shuffle
 
 
 # Create your views here.
+class StartPageView(LoginRequiredMixin, TemplateView):
+    template_name = 'newsletter_app/start_page.html'
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'The NewsLetter Service'
+        count_clients = len(Client.objects.filter(owner=self.request.user.pk))
+        count_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk))
+        active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
+        blog_list = [blog for blog in Blog.objects.all()]
+        shuffle(blog_list)
+        random_blog_list = blog_list[:3]
+        context_data['count_clients'] = count_clients
+        context_data['count_newsletters'] = count_newsletters
+        context_data['active_newsletters'] = active_newsletters
+        context_data['random_blog_list'] = random_blog_list
+        return context_data
+
+
 class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Client
     permission_required = ('newsletter_app.view_client',)
@@ -22,7 +42,6 @@ class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             self.model = User
             self.permission_required = ('users.set_is_active',)
             self.template_name = 'users/user_list.html'
-        # elif not self.request.user.is_staff and not self.request.user.is_superuser:
         else:
             queryset = queryset.filter(owner=self.request.user)
         return queryset
@@ -35,15 +54,14 @@ class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             context_data['object_list'] = User.objects.exclude(email=current_user)
             context_data['object_list'] = context_data['object_list'].exclude(is_superuser=True).order_by('email')
             context_data['title'] = 'Список пользователей'
+        context_data = super().get_context_data(**kwargs)
+        context_data['title'] = 'Список клиентов'
         count_clients = len(Client.objects.filter(owner=self.request.user.pk))
         count_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk))
         active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
-        # blog_list = [blog for blog in Blog.objects.all()]
-        # random_blog_list = random.sample(blog_list, 3)
         context_data['count_clients'] = count_clients
         context_data['count_newsletters'] = count_newsletters
         context_data['active_newsletters'] = active_newsletters
-        # context_data['random_blog_list'] = random_blog_list
         return context_data
 
 
@@ -80,7 +98,9 @@ class ClientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     permission_required = ('newsletter_app.delete_client',)
 
     def get_context_data(self, **kwargs):
-        """Подтверждение удаления"""
+        """
+        Подтверждение удаления
+        """
         context_data = super().get_context_data(**kwargs)
         client_item = Client.objects.get(pk=self.kwargs.get('pk'))
         context_data['client_pk'] = client_item.pk

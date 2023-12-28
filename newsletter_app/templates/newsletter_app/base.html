@@ -167,7 +167,8 @@
 
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
         <a class="me-3 py-2 link-body-emphasis text-decoration-none">{{ user.email }}</a>
-        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:index' %}">Главная</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:start_page' %}">Главная</a>
+        <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:index' %}">Клиенты</a>
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:newsletters' %}">Рассылки</a>
         {% if perms.newsletter_app.view_logs %}
         <a class="me-3 py-2 link-body-emphasis text-decoration-none" href="{% url 'news:logs' %}">LOGS</a>
