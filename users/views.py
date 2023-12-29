@@ -70,6 +70,7 @@ def verify_mail(request, code):
 
         user.save()
         messages.success(request, 'Ваш аккаунт активирован!')
+
         users_group = Group.objects.filter(name='Users')
         print(users_group)
         if users_group:
@@ -111,6 +112,16 @@ def verify_mail(request, code):
             users_group.save()
             user.groups.add(users_group)
             user.save()
+            # создаю группу модераторов с правами
+            moderators_group, created = Group.objects.get_or_create(name='Moderators')
+            if created:
+                # Создаем группу сразу с разрешениями, если она только что была создана
+                permissions = Permission.objects.filter(
+                    codename__in=['set_is_active', 'set_status_send', 'view_newsletter']
+                )
+                moderators_group.permissions.set(permissions)
+            moderators_group.save()
+
     except (ValueError, User.DoesNotExist):
         user = None
         messages.warning(request, 'Неверный код верификации')
