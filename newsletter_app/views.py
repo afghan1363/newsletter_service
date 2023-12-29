@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView, TemplateView
+from django.views.generic import (ListView, CreateView, UpdateView,
+                                  DetailView, DeleteView, TemplateView)
 from newsletter_app.models import Client, Newsletter, Message
 from newsletter_app.forms import ClientForm, NewsletterForm, MessageForm
 from django.urls import reverse_lazy, reverse
@@ -16,6 +17,7 @@ class StartPageView(LoginRequiredMixin, TemplateView):
     template_name = 'newsletter_app/start_page.html'
 
     def get_context_data(self, **kwargs):
+        """Вывод информации на главную страницу"""
         context_data = super().get_context_data(**kwargs)
         context_data['title'] = 'The NewsLetter Service'
         if not self.request.user.is_superuser:
@@ -24,7 +26,8 @@ class StartPageView(LoginRequiredMixin, TemplateView):
         else:
             count_clients = len(Client.objects.all())
             count_newsletters = len(Newsletter.objects.all())
-        active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
+        active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk,
+                                                           status_send='STARTED'))
         blog_items = cache_it()
         if blog_items:
             blog_list = [blog for blog in blog_items]
@@ -43,6 +46,7 @@ class ClientView(LoginRequiredMixin, ListView, PermissionRequiredMixin):
     permission_required = ('newsletter_app.view_client',)
 
     def get_queryset(self, *args, **kwargs):
+        """Переопределение модели и прав доступа для Модератора"""
         queryset = super().get_queryset()
         if self.request.user.groups.filter(name='Moderators'):
             self.model = User
@@ -54,6 +58,7 @@ class ClientView(LoginRequiredMixin, ListView, PermissionRequiredMixin):
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """Формирование object_list в зависимости от группы пользователя"""
         context_data = super().get_context_data(**kwargs)
         current_user = self.request.user
         context_data['title'] = 'Список клиентов'
@@ -73,6 +78,7 @@ class ClientView(LoginRequiredMixin, ListView, PermissionRequiredMixin):
 
 
 class ClientCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Создание клиента"""
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('news:index')
@@ -85,6 +91,7 @@ class ClientCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
 
 class ClientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """Редактирование клиента"""
     model = Client
     form_class = ClientForm
     permission_required = ('newsletter_app.change_client',)
@@ -100,6 +107,7 @@ class ClientDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
 
 class ClientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Удаление клиента"""
     model = Client
     success_url = reverse_lazy('news:index')
     permission_required = ('newsletter_app.delete_client',)
@@ -116,6 +124,7 @@ class ClientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 
 
 class NewsletterView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    """Просмотр рассылок"""
     model = Newsletter
     permission_required = ('newsletter_app.view_newsletter',)
     extra_context = {'title': 'Рассылки'}
@@ -129,6 +138,7 @@ class NewsletterView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
 
 class NewsletterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """создание рассылки"""
     model = Newsletter
     form_class = NewsletterForm
     permission_required = ('newsletter_app.add_newsletter',)
@@ -149,6 +159,7 @@ class NewsletterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
 
 
 class NewsletterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """Редактирование рассылки"""
     model = Newsletter
     form_class = NewsletterForm
     permission_required = ('newsletter_app.change_newsletter',)
@@ -162,6 +173,7 @@ class NewsletterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Склеивание форм рассылок и сообщений"""
         context_data = super().get_context_data(**kwargs)
         options_formset = inlineformset_factory(Newsletter, Message, form=MessageForm, extra=1, max_num=1,
                                                 validate_max=True)
@@ -185,10 +197,7 @@ class NewsletterUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
 @permission_required(perm='newsletter_app.set_status_send', login_url='users:login')
 def change_newsletter_status(request, pk):
     """
-    Переключение статуса рассылки
-    :param request: реквест
-    :param pk: пикей рассылки
-    :return: redirect
+    Переключение статуса рассылки для Модератора
     """
     newsletter_item = get_object_or_404(Newsletter, pk=pk)
     if newsletter_item.status_send != 'COMPLETED':
@@ -222,7 +231,8 @@ class NewsletterDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
 
 
 class LogsView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
-    model = Newsletter
+    """Просмотр Логов"""
+    model = Newsletter      # так проще:)
     extra_context = {'title': 'LoGs'}
     template_name = 'newsletter_app/logs_list.html'
     permission_required = 'newsletter_app.view_logs'

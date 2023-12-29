@@ -5,10 +5,12 @@ from datetime import date, timedelta
 
 # Create your models here.
 def get_date_now():
+    """Получение текущей даты"""
     return date.today()
 
 
 def get_date_plus_week():
+    """Получение даты через неделю"""
     return date.today() + timedelta(weeks=1)
 
 

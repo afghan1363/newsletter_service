@@ -1,8 +1,7 @@
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import CreateView, View, ListView
-
 from newsletter_app.models import Newsletter, Client, Message, Logs
 from users.models import User
 from users.forms import UserRegisterForm
@@ -135,6 +134,9 @@ def is_moderator(user):
 @login_required
 @user_passes_test(test_func=is_moderator, login_url='users:login')
 def toggle_activity(request, pk):
+    """
+    Функция переключения статуса is_active
+    """
     user_item = get_object_or_404(User, pk=pk)
     if user_item.is_active:
         user_item.is_active = False

@@ -28,16 +28,18 @@ def mailing_util(subject,
 
 
 def do_newsletter():
+    """
+    Функция отправки сообщений
+    :return:
+    """
     print('StartSend')
     now = date.today()
     receivers = Newsletter.objects.filter(date_start__lte=now, date_stop__gte=now)
-    print(receivers)
     new_receivers_list = [newsletter for newsletter in receivers if newsletter.status_send == 'CREATED']
     if len(new_receivers_list) > 0:
         for newsletter in new_receivers_list:
             newsletter.status_send = 'STARTED'
             newsletter.save()
-            # new_receivers_list = []
     receivers_list = [newsletter for newsletter in receivers if newsletter.status_send == 'STARTED']
     if len(receivers_list) > 0:
         for newsletter in receivers_list:
@@ -74,6 +76,7 @@ def do_newsletter():
 
 
 def cache_it():
+    """Кэширование блога"""
     if settings.CACHE_ENABLED:
         key = 'blog_list'
         blog_list = cache.get(key)
