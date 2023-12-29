@@ -70,6 +70,7 @@ def verify_mail(request, code):
         users_group = Group.objects.get(name='Users')
         if users_group:
             user.groups.add(users_group)
+            user.save()
         else:
             users_group = Group.objects.create(name='Users')
             # permission = !!!!!
@@ -81,7 +82,9 @@ def verify_mail(request, code):
                                          'newsletter_app.change_log', 'newsletter_app.delete_log',
                                          'newsletter_app.add_message', 'newsletter_app.view_message',
                                          'newsletter_app.change_message', 'newsletter_app.delete_message'])
+            users_group.save()
             user.groups.add(users_group)
+            user.save()
     except (ValueError, User.DoesNotExist):
         user = None
         messages.warning(request, 'Неверный код верификации')
