@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import CreateView, View, ListView
 from users.models import User
@@ -67,24 +67,19 @@ def verify_mail(request, code):
 
         user.save()
         messages.success(request, 'Ваш аккаунт активирован!')
-        users_group = Group.objects.get(name='Users')
-        if users_group:
-            user.groups.add(users_group)
-            user.save()
-        else:
-            users_group = Group.objects.create(name='Users')
-            # permission = !!!!!
-            users_group.permissions.set(['newsletter_app.add_newsletter', 'newsletter_app.view_newsletter',
-                                         'newsletter_app.change_newsletter', 'newsletter_app.delete_newsletter',
-                                         'newsletter_app.add_client', 'newsletter_app.view_client',
-                                         'newsletter_app.change_client', 'newsletter_app.delete_client',
-                                         'newsletter_app.add_log', 'newsletter_app.view_log',
-                                         'newsletter_app.change_log', 'newsletter_app.delete_log',
-                                         'newsletter_app.add_message', 'newsletter_app.view_message',
-                                         'newsletter_app.change_message', 'newsletter_app.delete_message'])
-            users_group.save()
-            user.groups.add(users_group)
-            user.save()
+        users_group, created = Group.objects.get_or_create(name='Users')
+        if created:
+            # Создаем группу сразу с разрешениями, если она только что была создана
+            permissions = Permission.objects.filter(
+                codename__in=['add_newsletter', 'view_newsletter', 'change_newsletter', 'delete_newsletter',
+                              'add_client', 'view_client', 'change_client', 'delete_client',
+                              'add_log', 'view_log', 'change_log', 'delete_log',
+                              'add_message', 'view_message', 'change_message', 'delete_message']
+            )
+            users_group.permissions.set(permissions)
+        users_group.save()  # ?
+        user.groups.add(users_group)
+        user.save()
     except (ValueError, User.DoesNotExist):
         user = None
         messages.warning(request, 'Неверный код верификации')
