@@ -80,6 +80,6 @@ def cache_it():
         if blog_list is None:
             blog_list = Blog.objects.all()
             cache.set(key, blog_list)
-        else:
-            blog_list = Blog.objects.all()
+    else:
+        blog_list = Blog.objects.all()
         return blog_list
