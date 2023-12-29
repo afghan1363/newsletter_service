@@ -28,13 +28,15 @@ class StartPageView(LoginRequiredMixin, TemplateView):
             count_newsletters = len(Newsletter.objects.all())
         active_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk, status_send='STARTED'))
         blog_items = cache_it()
-        blog_list = [blog for blog in blog_items]
-        shuffle(blog_list)
-        random_blog_list = blog_list[:3]
+        if blog_items:
+            blog_list = [blog for blog in blog_items]
+            shuffle(blog_list)
+            random_blog_list = blog_list[:3]
+            context_data['random_blog_list'] = random_blog_list
         context_data['count_clients'] = count_clients
         context_data['count_newsletters'] = count_newsletters
         context_data['active_newsletters'] = active_newsletters
-        context_data['random_blog_list'] = random_blog_list
+
         return context_data
 
 
@@ -44,13 +46,13 @@ class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         queryset = super().get_queryset()
-
         if self.request.user.groups.filter(name='Moderators'):
             self.model = User
             self.permission_required = ('users.set_is_active',)
             self.template_name = 'users/user_list.html'
         else:
             queryset = queryset.filter(owner=self.request.user)
+
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -61,7 +63,7 @@ class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             context_data['object_list'] = User.objects.exclude(email=current_user)
             context_data['object_list'] = context_data['object_list'].exclude(is_superuser=True).order_by('email')
             context_data['title'] = 'Список пользователей'
-        context_data = super().get_context_data(**kwargs)
+        # context_data = super().get_context_data(**kwargs)
         context_data['title'] = 'Список клиентов'
         count_clients = len(Client.objects.filter(owner=self.request.user.pk))
         count_newsletters = len(Newsletter.objects.filter(owner=self.request.user.pk))
