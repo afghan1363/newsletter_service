@@ -7,6 +7,7 @@ ____
    ### Файл с зависимостями requirements.txt
    ### Установка зависимостей выполняется командой
       pip3 install -r requirements.txt*
+   ### Необходимо создать базу данных posgresql с именем newsletter_service
    ### Необходимо применить миграции командой
       python3 manage.py migrate*
    ### Создание суперпользователя
