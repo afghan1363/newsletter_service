@@ -6,10 +6,8 @@ from newsletter_app.forms import ClientForm, NewsletterForm, MessageForm
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import inlineformset_factory
-
 from newsletter_app.services import cache_it
 from users.models import User
-from blog_app.models import Blog
 from random import shuffle
 
 
@@ -40,7 +38,7 @@ class StartPageView(LoginRequiredMixin, TemplateView):
         return context_data
 
 
-class ClientView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+class ClientView(LoginRequiredMixin, ListView, PermissionRequiredMixin):
     model = Client
     permission_required = ('newsletter_app.view_client',)
 
